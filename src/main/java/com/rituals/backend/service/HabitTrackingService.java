@@ -67,12 +67,10 @@ public class HabitTrackingService {
     public TrackerLog logProgress(Long userHabitId, LocalDate date, String remark, boolean completed) {
         UserHabit habit = userHabitRepository.findById(userHabitId).orElseThrow();
         
-        // Relaxed for testing/simulation: Allow past logging if requested
-        /*
+        // Production Rule: Strictly lock past and future logs
         if (date.isBefore(LocalDate.now())) {
             throw new RuntimeException("This day is frozen. You cannot log progress for past days.");
         }
-        */
         if (date.isAfter(LocalDate.now())) {
             throw new RuntimeException("You cannot log progress for the future. Patience is a virtue.");
         }
