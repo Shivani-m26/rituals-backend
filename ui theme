@@ -1,0 +1,101 @@
+# Pastel Cozy Journal-Themed Habit Tracking UI
+
+Redesign the entire Rituals frontend with a **scrapbook / bullet journal aesthetic** — warm, cozy, and premium feeling. The UI will use pastel colors, sticky-note components, floating sticker decorations, and handwritten fonts.
+
+## Design Mockup
+
+![Journal UI Mockup](C:\Users\Shivani M\.gemini\antigravity\brain\4530055c-3463-4442-abaa-28f46ac48338\journal_ui_mockup_1772905261108.png)
+
+## Proposed Changes
+
+### Design System & Global Styles
+
+#### [MODIFY] [tailwind.config.js](file:///c:/Users/Shivani%20M/.gemini/antigravity/scratch/rituals/frontend/tailwind.config.js)
+- Replace the existing color palette with the new pastel journal palette:
+  - `cream`: `#FFF7F2`, `pink`: `#F8C8DC`, `baby-blue`: `#CDE7FF`, `mint`: `#CFF5E7`, `yellow`: `#FFF3B0`, `coffee`: `#8B6A60`
+- Add handwritten font family (`Caveat` for headings, `Inter` for body)
+- Add custom keyframe animations: `float`, `fadeInUp`, `checkmark`, `wiggle`
+- Add custom box-shadow utilities for soft notebook shadows
+
+#### [MODIFY] [styles.css](file:///c:/Users/Shivani%20M/.gemini/antigravity/scratch/rituals/frontend/src/styles.css)
+- Import Google Fonts: `Caveat` (handwritten) + `Inter` (body)
+- Set `#FFF7F2` cream background with CSS dot-grid pattern overlay
+- Define global styles for sticky-note cards, checkbox animations, and floating sticker keyframes
+- Add custom utility classes: `.sticky-note`, `.journal-card`, `.sticker`, `.habit-checkbox`
+
+#### [MODIFY] [index.html](file:///c:/Users/Shivani%20M/.gemini/antigravity/scratch/rituals/frontend/src/index.html)
+- Update `<title>` to "Rituals — Your Cozy Habit Journal"
+- Add meta description for SEO
+
+---
+
+### Layout Components
+
+#### [MODIFY] [navbar.component.html](file:///c:/Users/Shivani%20M/.gemini/antigravity/scratch/rituals/frontend/src/app/components/layout/navbar/navbar.component.html)
+- Restyle navbar: cream background with coffee-brown accents
+- Use `Caveat` handwritten font for "Rituals." branding
+- Add washi-tape decorative border at bottom
+- Rounded pill-shaped nav buttons in pastel colors
+
+#### [MODIFY] [navbar.component.css](file:///c:/Users/Shivani%20M/.gemini/antigravity/scratch/rituals/frontend/src/app/components/layout/navbar/navbar.component.css)
+- Add washi-tape border animation and styles
+
+---
+
+### Home / Dashboard Page
+
+#### [MODIFY] [home.component.html](file:///c:/Users/Shivani%20M/.gemini/antigravity/scratch/rituals/frontend/src/app/pages/home/home.component.html)
+- Complete redesign as a cozy journal dashboard with:
+  - **Header section**: "Today's Rituals" in handwritten font with date
+  - **Habit tracker grid**: Sticky-note styled cards (each in a different pastel color) with animated checkboxes
+  - **Progress section**: A cozy progress bar styled as a watercolor fill
+  - **Journal entry area**: Lined notebook-style textarea
+  - **Floating stickers**: Decorative SVG stickers (☕ 📚 🌿 ⭐ ✏️ ✅) with subtle float animation scattered across the page
+
+#### [MODIFY] [home.component.ts](file:///c:/Users/Shivani%20M/.gemini/antigravity/scratch/rituals/frontend/src/app/pages/home/home.component.ts)
+- Add habit data model with `name`, `completed`, `color`, `icon` properties
+- Add `toggleHabit()` method with animation trigger
+- Add sample habits array (Morning Meditation, Read 30 mins, Drink Water, Exercise, Journal, etc.)
+- Add `journalEntry` property for the notebook textarea
+
+#### [MODIFY] [home.component.css](file:///c:/Users/Shivani%20M/.gemini/antigravity/scratch/rituals/frontend/src/app/pages/home/home.component.css)
+- Floating sticker animation styles
+- Sticky note hover effects (slight rotation + lift)
+- Checkbox custom animation (bounce + checkmark draw)
+- Notebook-ruled lines for journal textarea
+
+---
+
+### Auth Pages
+
+#### [MODIFY] [login.component.html](file:///c:/Users/Shivani%20M/.gemini/antigravity/scratch/rituals/frontend/src/app/components/auth/login/login.component.html)
+- Restyle with journal aesthetic: cream card with notebook lines
+- Pink accent for the sign-in button
+- Decorative tape/sticker accents
+
+#### [MODIFY] [register.component.html](file:///c:/Users/Shivani%20M/.gemini/antigravity/scratch/rituals/frontend/src/app/components/auth/register/register.component.html)
+- Restyle matching the login page with mint-green accent for the join button
+- Decorative elements
+
+---
+
+### App Shell
+
+#### [MODIFY] [app.component.html](file:///c:/Users/Shivani%20M/.gemini/antigravity/scratch/rituals/frontend/src/app/app.component.html)
+- Update background classes to use new cream + dot-grid pattern
+
+---
+
+## Verification Plan
+
+### Browser Verification
+1. Open `http://localhost:4200` in the browser after implementation
+2. Verify the following visually:
+   - Cream dotted-grid background is visible
+   - Navbar shows "Rituals." in handwritten Caveat font
+   - Home page displays sticky-note habit cards in pastel colors
+   - Clicking checkboxes triggers a tick animation
+   - Floating sticker decorations animate subtly
+   - Journal textarea has notebook-ruled lines
+   - Login and Register pages match the cozy theme
+3. Check responsiveness at mobile/tablet breakpoints
