@@ -1,16 +1,26 @@
 package com.rituals.backend.config;
 
+import com.rituals.backend.entity.AppUser;
+import com.rituals.backend.entity.Badge;
 import com.rituals.backend.entity.MasterHabitCatalog;
+import com.rituals.backend.repository.AppUserRepository;
+import com.rituals.backend.repository.BadgeRepository;
 import com.rituals.backend.repository.MasterHabitRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.time.LocalDate;
 
 @Configuration
 @RequiredArgsConstructor
 public class DataInitializer implements CommandLineRunner {
 
     private final MasterHabitRepository habitRepository;
+    private final AppUserRepository userRepository;
+    private final BadgeRepository badgeRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public void run(String... args) {
@@ -19,6 +29,61 @@ public class DataInitializer implements CommandLineRunner {
             System.out.println("[DEBUG] Seed mismatch. Re-seeding 600 habits...");
             habitRepository.deleteAll();
             seedHabits();
+        }
+
+        // Seed mock users for leaderboard demonstration
+        seedMockUsers();
+    }
+
+    private void seedMockUsers() {
+        String[][] mockUsers = {
+            {"zenmaster", "zen@rituals.demo", "Male", "850"},
+            {"sakura_bloom", "sakura@rituals.demo", "Female", "620"},
+            {"mindful_monk", "monk@rituals.demo", "Male", "445"},
+            {"luna_ritual", "luna@rituals.demo", "Female", "310"},
+            {"cosmic_habits", "cosmic@rituals.demo", "Male", "180"},
+        };
+
+        for (String[] userData : mockUsers) {
+            String username = userData[0];
+            String email = userData[1];
+            String gender = userData[2];
+            int points = Integer.parseInt(userData[3]);
+
+            if (!userRepository.existsByEmail(email)) {
+                AppUser user = AppUser.builder()
+                    .username(username)
+                    .email(email)
+                    .password(passwordEncoder.encode("demo1234"))
+                    .gender(gender)
+                    .dateOfBirth(LocalDate.of(1998, 5, 15))
+                    .totalPoints(points)
+                    .build();
+                user = userRepository.save(user);
+
+                // Add badges for top users
+                if (points >= 500) {
+                    badgeRepository.save(Badge.builder()
+                        .user(user).name("GOLD Ritual Master").tier("GOLD")
+                        .earnedAt(LocalDate.now().minusDays(10))
+                        .habitReferenceName("Meditation Mastery")
+                        .build());
+                    badgeRepository.save(Badge.builder()
+                        .user(user).name("SILVER Ritual Master").tier("SILVER")
+                        .earnedAt(LocalDate.now().minusDays(20))
+                        .habitReferenceName("Daily Reading")
+                        .build());
+                }
+                if (points >= 300) {
+                    badgeRepository.save(Badge.builder()
+                        .user(user).name("SILVER Ritual Master").tier("SILVER")
+                        .earnedAt(LocalDate.now().minusDays(5))
+                        .habitReferenceName("Yoga Practice")
+                        .build());
+                }
+
+                System.out.println("[SEED] Created mock user: " + username + " with " + points + " points");
+            }
         }
     }
 

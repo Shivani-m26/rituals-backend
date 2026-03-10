@@ -77,6 +77,7 @@ public class HabitTrackingService {
 
         Optional<TrackerLog> existing = trackerLogRepository.findByUserHabitIdAndDate(userHabitId, date);
         boolean wasCompleted = existing.map(TrackerLog::getIsCompleted).orElse(false);
+        boolean isNewLog = existing.isEmpty();
 
         TrackerLog log = existing.orElse(TrackerLog.builder()
                 .userHabit(habit)
@@ -86,31 +87,41 @@ public class HabitTrackingService {
         log.setRemark(remark);
         log.setIsCompleted(completed);
         
-        // Update Stats and Habit-specific Points
+        int pointsChanged = 0;
+        
+        // Points Calculation:
+        // +5 for completing (only when status changes to completed)
+        // -10 for marking as not completed (only when status changes to not completed from completed)
+        // For new logs: +5 if completed, 0 if marking as not done (no penalty on first log-not-done)
         if (completed && !wasCompleted) {
+            // Completing the habit
             habit.setTotalCompletions(habit.getTotalCompletions() + 1);
             habit.setStreakCount(habit.getStreakCount() + 1);
+            pointsChanged = 5;
             habit.setTotalPointsAttained(habit.getTotalPointsAttained() + 5);
-            log.setPointsChanged(5);
         } else if (!completed && wasCompleted) {
+            // Unchecking a previously completed habit
             habit.setTotalCompletions(Math.max(0, habit.getTotalCompletions() - 1));
             habit.setStreakCount(0);
-            habit.setTotalPointsAttained(Math.max(0, habit.getTotalPointsAttained() - 5)); // Reverse +5
-            habit.setTotalPointsAttained(habit.getTotalPointsAttained() - 10); // Apply -10 for "no show"
-            habit.setTotalPointsLost(habit.getTotalPointsLost() + 10);
-            log.setPointsChanged(-10);
-        } else if (!completed && !wasCompleted) {
-            log.setPointsChanged(-10);
-            habit.setTotalPointsAttained(habit.getTotalPointsAttained() - 10);
-            habit.setTotalPointsLost(habit.getTotalPointsLost() + 10);
+            pointsChanged = -5; // Reverse the +5 that was given
+            habit.setTotalPointsAttained(Math.max(0, habit.getTotalPointsAttained() - 5));
+            habit.setTotalPointsLost(habit.getTotalPointsLost() + 5);
+        } else if (!completed && !wasCompleted && !isNewLog) {
+            // Re-logging an existing not-completed entry: no additional penalty
+            pointsChanged = 0;
         }
+        // If completed && wasCompleted: no change (already counted)
+        // If new log && not completed: no penalty (user just opened the log)
 
+        log.setPointsChanged(pointsChanged);
         userHabitRepository.save(habit);
         
         // Update Global User Total Points
-        AppUser user = habit.getUser();
-        user.setTotalPoints(user.getTotalPoints() + log.getPointsChanged());
-        userRepository.save(user);
+        if (pointsChanged != 0) {
+            AppUser user = habit.getUser();
+            user.setTotalPoints(user.getTotalPoints() + pointsChanged);
+            userRepository.save(user);
+        }
 
         return trackerLogRepository.save(log);
     }
@@ -134,10 +145,10 @@ public class HabitTrackingService {
         user.setTotalPoints(user.getTotalPoints() - penaltyFee);
         userRepository.save(user);
 
-        // Determine Tier
+        // Determine Tier based on plan type
         String tier = "SILVER";
         if (habit.getPlanType().equals("21")) tier = "GOLD";
-        else if (habit.getPlanType().equals("48") || habit.getPlanType().equals("Infinite")) tier = "PLATINUM";
+        else if (habit.getPlanType().equals("48") || habit.getPlanType().equalsIgnoreCase("Infinite")) tier = "PLATINUM";
 
         Badge badge = Badge.builder()
                 .user(user)

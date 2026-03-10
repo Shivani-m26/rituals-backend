@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.List;
 
 @RestController
@@ -27,6 +29,22 @@ public class AnalysisController {
         AppUser user = userRepository.findByEmail(authentication.getName()).orElseThrow();
         preference.setUser(user);
         
+        // Auto-fill gender from user profile if not provided
+        if (preference.getGender() == null || preference.getGender().isBlank()) {
+            preference.setGender(user.getGender());
+        }
+
+        // Calculate age from dateOfBirth if provided
+        if (preference.getDateOfBirth() != null) {
+            int age = Period.between(preference.getDateOfBirth(), LocalDate.now()).getYears();
+            preference.setAge(age);
+        } else if (user.getDateOfBirth() != null) {
+            // Fallback to user's DOB from registration
+            int age = Period.between(user.getDateOfBirth(), LocalDate.now()).getYears();
+            preference.setAge(age);
+            preference.setDateOfBirth(user.getDateOfBirth());
+        }
+
         // Update existing if present
         preferenceRepository.findByUserId(user.getId()).ifPresent(p -> preference.setId(p.getId()));
         
@@ -42,5 +60,21 @@ public class AnalysisController {
         
         List<MasterHabitCatalog> recommendations = recommendationService.getRecommendations(preference);
         return ResponseEntity.ok(recommendations);
+    }
+
+    @GetMapping("/user-info")
+    public ResponseEntity<?> getUserInfo(Authentication authentication) {
+        AppUser user = userRepository.findByEmail(authentication.getName()).orElseThrow();
+        
+        Integer age = null;
+        if (user.getDateOfBirth() != null) {
+            age = Period.between(user.getDateOfBirth(), LocalDate.now()).getYears();
+        }
+        
+        return ResponseEntity.ok(java.util.Map.of(
+            "gender", user.getGender() != null ? user.getGender() : "",
+            "dateOfBirth", user.getDateOfBirth() != null ? user.getDateOfBirth().toString() : "",
+            "age", age != null ? age : 0
+        ));
     }
 }

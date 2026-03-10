@@ -28,6 +28,7 @@ public class UserHabit {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "master_habit_id")
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private MasterHabitCatalog masterHabit;
 
     @Column(nullable = false)
@@ -72,5 +73,6 @@ public class UserHabit {
     // Inverse relationship for TrackerLogs
     @OneToMany(mappedBy = "userHabit", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @OrderBy("date ASC")
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private List<TrackerLog> trackerLogs;
 }

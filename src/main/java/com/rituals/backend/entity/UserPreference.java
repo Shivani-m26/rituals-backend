@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "user_preferences")
@@ -25,6 +26,9 @@ public class UserPreference {
 
     private Integer age;
     private String gender;
+
+    @Column(name = "date_of_birth")
+    private LocalDate dateOfBirth;
 
     @Column(name = "selected_domain")
     private String selectedDomain;

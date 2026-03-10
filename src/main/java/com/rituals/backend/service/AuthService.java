@@ -29,6 +29,7 @@ public class AuthService {
                 .username(request.getUsername())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .gender(request.getGender())
+                .dateOfBirth(request.getDateOfBirth())
                 .totalPoints(0)
                 .build();
 
