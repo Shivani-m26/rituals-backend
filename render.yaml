@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: rituals-backend
+    env: java
+    buildCommand: ./mvnw clean package -DskipTests
+    startCommand: java -jar target/backend-0.0.1-SNAPSHOT.jar
+    envVars:
+      - key: SPRING_DATASOURCE_URL
+        fromDatabase:
+          name: rituals-db
+          property: connectionString
+      - key: SPRING_DATASOURCE_USERNAME
+        fromDatabase:
+          name: rituals-db
+          property: user
+      - key: SPRING_DATASOURCE_PASSWORD
+        fromDatabase:
+          name: rituals-db
+          property: password
+
+  - type: psql
+    name: rituals-db
+    plan: free
