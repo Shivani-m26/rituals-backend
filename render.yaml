@@ -10,7 +10,7 @@ services:
       - key: SPRING_DATASOURCE_URL
         fromDatabase:
           name: rituals-db
-          property: connectionString
+          property: connectionStringJDBC
       - key: SPRING_DATASOURCE_USERNAME
         fromDatabase:
           name: rituals-db
