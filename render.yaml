@@ -1,3 +1,7 @@
+databases:
+  - name: rituals-db
+    plan: free
+
 services:
   - type: web
     name: rituals-backend
@@ -17,7 +21,3 @@ services:
         fromDatabase:
           name: rituals-db
           property: password
-
-  - type: psql
-    name: rituals-db
-    plan: free
