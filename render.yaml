@@ -7,10 +7,18 @@ services:
     name: rituals-backend
     env: docker
     envVars:
-      - key: SPRING_DATASOURCE_URL
+      - key: DB_HOST
         fromDatabase:
           name: rituals-db
-          property: connectionStringJDBC
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: rituals-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: rituals-db
+          property: database
       - key: SPRING_DATASOURCE_USERNAME
         fromDatabase:
           name: rituals-db
