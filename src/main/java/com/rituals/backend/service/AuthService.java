@@ -23,6 +23,11 @@ public class AuthService {
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new RuntimeException("Username is already taken!");
         }
+        
+        String pwd = request.getPassword();
+        if (pwd == null || pwd.length() < 8 || !pwd.matches(".*[A-Z].*") || !pwd.matches(".*[a-z].*") || !pwd.matches(".*\\d.*") || !pwd.matches(".*[!@#$%^&*()-+=_].*")) {
+            throw new RuntimeException("Password must be at least 8 characters long and contain uppercase, lowercase, number, and special character.");
+        }
 
         AppUser user = AppUser.builder()
                 .email(request.getEmail())

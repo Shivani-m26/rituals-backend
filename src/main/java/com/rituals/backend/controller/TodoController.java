@@ -37,12 +37,12 @@ public class TodoController {
     }
 
     @PatchMapping("/{id}/toggle")
-    public ResponseEntity<Todo> toggleTodo(@PathVariable Long id) {
+    public ResponseEntity<Todo> toggleTodo(@PathVariable("id") Long id) {
         return ResponseEntity.ok(todoService.toggleTodo(id));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTodo(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteTodo(@PathVariable("id") Long id) {
         todoService.deleteTodo(id);
         return ResponseEntity.ok().build();
     }

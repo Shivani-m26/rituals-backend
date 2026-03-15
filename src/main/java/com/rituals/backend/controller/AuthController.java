@@ -97,8 +97,8 @@ public class AuthController {
             return ResponseEntity.badRequest().body("Email, token, and new password are required.");
         }
 
-        if (newPassword.length() < 6) {
-            return ResponseEntity.badRequest().body("Password must be at least 6 characters.");
+        if (newPassword.length() < 8 || !newPassword.matches(".*[A-Z].*") || !newPassword.matches(".*[a-z].*") || !newPassword.matches(".*\\d.*") || !newPassword.matches(".*[!@#$%^&*()-+=_].*")) {
+            return ResponseEntity.badRequest().body("Password must be at least 8 characters long and contain uppercase, lowercase, number, and special character.");
         }
 
         AppUser user = userRepository.findByEmail(email).orElse(null);

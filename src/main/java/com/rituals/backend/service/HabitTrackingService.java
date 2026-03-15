@@ -68,9 +68,12 @@ public class HabitTrackingService {
         UserHabit habit = userHabitRepository.findById(userHabitId).orElseThrow();
         
         // Production Rule: Strictly lock past and future logs
+        // TEMPORARILY DISABLED FOR DEMO
+        /*
         if (date.isBefore(LocalDate.now())) {
             throw new RuntimeException("This day is frozen. You cannot log progress for past days.");
         }
+        */
         if (date.isAfter(LocalDate.now())) {
             throw new RuntimeException("You cannot log progress for the future. Patience is a virtue.");
         }

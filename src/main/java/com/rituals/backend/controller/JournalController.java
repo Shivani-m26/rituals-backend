@@ -44,7 +44,7 @@ public class JournalController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Journal> getJournalById(@PathVariable Long id) {
+    public ResponseEntity<Journal> getJournalById(@PathVariable("id") Long id) {
         return journalService.getJournalById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());

@@ -66,7 +66,7 @@ public class HabitTrackingController {
     }
 
     @PostMapping("/{id}/log")
-    public ResponseEntity<?> logProgress(@PathVariable Long id, @RequestBody Map<String, Object> request) {
+    public ResponseEntity<?> logProgress(@PathVariable("id") Long id, @RequestBody Map<String, Object> request) {
         String remark = (String) request.get("remark");
         boolean completed = (boolean) request.get("completed");
         try {
@@ -79,12 +79,12 @@ public class HabitTrackingController {
     }
 
     @GetMapping("/{id}/logs")
-    public ResponseEntity<List<TrackerLog>> getHabitLogs(@PathVariable Long id) {
+    public ResponseEntity<List<TrackerLog>> getHabitLogs(@PathVariable("id") Long id) {
         return ResponseEntity.ok(trackingService.getLogs(id));
     }
 
     @PostMapping("/{id}/claim-badge")
-    public ResponseEntity<?> claimBadge(@PathVariable Long id) {
+    public ResponseEntity<?> claimBadge(@PathVariable("id") Long id) {
         try {
             Badge badge = trackingService.claimBadge(id);
             return ResponseEntity.ok(badge);
@@ -94,7 +94,7 @@ public class HabitTrackingController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteHabit(@PathVariable Long id) {
+    public ResponseEntity<?> deleteHabit(@PathVariable("id") Long id) {
         try {
             trackingService.deleteHabit(id);
             return ResponseEntity.ok().build();

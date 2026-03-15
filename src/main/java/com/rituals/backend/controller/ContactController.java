@@ -8,12 +8,16 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
+import com.rituals.backend.entity.ContactMessage;
+import com.rituals.backend.repository.ContactMessageRepository;
+
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
 public class ContactController {
 
     private final EmailService emailService;
+    private final ContactMessageRepository contactMessageRepository;
 
     @PostMapping("/contact")
     public ResponseEntity<?> submitContactForm(@RequestBody ContactRequest request) {
@@ -30,6 +34,14 @@ public class ContactController {
             request.getPhone() != null ? request.getPhone() : "Not provided",
             request.getComments()
         );
+
+        ContactMessage msg = ContactMessage.builder()
+                .name(request.getName() != null ? request.getName() : "Anonymous")
+                .email(request.getEmail())
+                .phone(request.getPhone() != null ? request.getPhone() : "Not provided")
+                .comments(request.getComments())
+                .build();
+        contactMessageRepository.save(msg);
 
         return ResponseEntity.ok(Map.of("message", "Thank you for reaching out! We'll get back to you soon. ✨"));
     }
