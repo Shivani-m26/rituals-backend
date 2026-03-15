@@ -5,9 +5,7 @@ databases:
 services:
   - type: web
     name: rituals-backend
-    env: java
-    buildCommand: ./mvnw clean package -DskipTests
-    startCommand: java -jar target/backend-0.0.1-SNAPSHOT.jar
+    env: docker
     envVars:
       - key: SPRING_DATASOURCE_URL
         fromDatabase:
