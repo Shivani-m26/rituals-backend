@@ -1,0 +1,119 @@
+﻿[INFO] Scanning for projects...
+[INFO] 
+[INFO] ------------------------< com.rituals:backend >-------------------------
+[INFO] Building backend 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] >>> spring-boot:4.0.3:run (default-cli) > test-compile @ backend >>>
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ backend ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] Copying 0 resource from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.14.1:compile (default-compile) @ backend ---
+[INFO] Recompiling the module because of added or removed source files.
+[INFO] Compiling 46 source files with javac [debug parameters release 17] to target\classes
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ backend ---
+[INFO] skip non existing resourceDirectory C:\Users\Shivani M\OneDrive\Desktop\rituals-app\backend\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.14.1:testCompile (default-testCompile) @ backend ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 1 source file with javac [debug parameters release 17] to target\test-classes
+[INFO] 
+[INFO] <<< spring-boot:4.0.3:run (default-cli) < test-compile @ backend <<<
+[INFO] 
+[INFO] 
+[INFO] --- spring-boot:4.0.3:run (default-cli) @ backend ---
+[INFO] Attaching agents: []
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.0.3)
+
+2026-03-22T22:29:06.669+05:30  INFO 17424 --- [backend] [           main] com.rituals.backend.BackendApplication   : Starting BackendApplication using Java 17.0.12 with PID 17424 (C:\Users\Shivani M\OneDrive\Desktop\rituals-app\backend\target\classes started by Shivani M in C:\Users\Shivani M\OneDrive\Desktop\rituals-app\backend)
+2026-03-22T22:29:06.677+05:30  INFO 17424 --- [backend] [           main] com.rituals.backend.BackendApplication   : No active profile set, falling back to 1 default profile: "default"
+2026-03-22T22:29:09.058+05:30  INFO 17424 --- [backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-03-22T22:29:09.517+05:30  INFO 17424 --- [backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 391 ms. Found 9 JPA repository interfaces.
+2026-03-22T22:29:12.134+05:30  INFO 17424 --- [backend] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-03-22T22:29:12.199+05:30  INFO 17424 --- [backend] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-03-22T22:29:12.202+05:30  INFO 17424 --- [backend] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.18]
+2026-03-22T22:29:12.771+05:30  INFO 17424 --- [backend] [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 5966 ms
+2026-03-22T22:29:13.399+05:30  INFO 17424 --- [backend] [           main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-03-22T22:29:13.699+05:30  INFO 17424 --- [backend] [           main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.2.4.Final
+2026-03-22T22:29:15.752+05:30  INFO 17424 --- [backend] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-03-22T22:29:16.109+05:30  INFO 17424 --- [backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-03-22T22:29:17.523+05:30  INFO 17424 --- [backend] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@28b5d5dc
+2026-03-22T22:29:17.530+05:30  INFO 17424 --- [backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-03-22T22:29:17.709+05:30  WARN 17424 --- [backend] [           main] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-03-22T22:29:17.836+05:30  INFO 17424 --- [backend] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:postgresql://localhost:5432/rituals]
+	Database driver: PostgreSQL JDBC Driver
+	Database dialect: PostgreSQLDialect
+	Database version: 16.11
+	Default catalog/schema: rituals/public
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-03-22T22:29:23.888+05:30  INFO 17424 --- [backend] [           main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-03-22T22:29:24.270+05:30  INFO 17424 --- [backend] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-03-22T22:29:24.408+05:30  INFO 17424 --- [backend] [           main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-03-22T22:29:25.167+05:30  INFO 17424 --- [backend] [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name customUserDetailsService
+2026-03-22T22:29:26.505+05:30  WARN 17424 --- [backend] [           main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-03-22T22:29:27.948+05:30  INFO 17424 --- [backend] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
+2026-03-22T22:29:27.978+05:30  INFO 17424 --- [backend] [           main] com.rituals.backend.BackendApplication   : Started BackendApplication in 22.243 seconds (process running for 23.09)
+====== RUNNING DEMO DATA LOADER ======
+Hibernate: select au1_0.id,au1_0.date_of_birth,au1_0.email,au1_0.gender,au1_0.password,au1_0.reset_token,au1_0.reset_token_expiry,au1_0.total_points,au1_0.username from app_users au1_0 where au1_0.email=?
+Hibernate: select uh1_0.id,uh1_0.description,uh1_0.difficulty,uh1_0.domain,uh1_0.end_date,uh1_0.is_active,uh1_0.master_habit_id,uh1_0.name,uh1_0.plan_type,uh1_0.preferred_start_time,uh1_0.start_date,uh1_0.streak_count,uh1_0.total_completions,uh1_0.total_points_attained,uh1_0.total_points_lost,uh1_0.user_id,u1_0.id,u1_0.date_of_birth,u1_0.email,u1_0.gender,u1_0.password,u1_0.reset_token,u1_0.reset_token_expiry,u1_0.total_points,u1_0.username from user_habits uh1_0 join app_users u1_0 on u1_0.id=uh1_0.user_id where uh1_0.is_active=true
+Setting up demo habits for: test2@example.com
+Hibernate: insert into user_habits (description,difficulty,domain,end_date,is_active,master_habit_id,name,plan_type,preferred_start_time,start_date,streak_count,total_completions,total_points_attained,total_points_lost,user_id) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+Hibernate: select tl1_0.id,tl1_0.date,tl1_0.is_completed,tl1_0.points_changed,tl1_0.remark,tl1_0.user_habit_id from tracker_logs tl1_0 where tl1_0.user_habit_id=? and tl1_0.date=?
+Hibernate: insert into tracker_logs (date,is_completed,points_changed,remark,user_habit_id) values (?,?,?,?,?)
+Logged 2026-03-17: true
+Hibernate: select tl1_0.id,tl1_0.date,tl1_0.is_completed,tl1_0.points_changed,tl1_0.remark,tl1_0.user_habit_id from tracker_logs tl1_0 where tl1_0.user_habit_id=? and tl1_0.date=?
+Hibernate: insert into tracker_logs (date,is_completed,points_changed,remark,user_habit_id) values (?,?,?,?,?)
+Logged 2026-03-18: true
+Hibernate: select tl1_0.id,tl1_0.date,tl1_0.is_completed,tl1_0.points_changed,tl1_0.remark,tl1_0.user_habit_id from tracker_logs tl1_0 where tl1_0.user_habit_id=? and tl1_0.date=?
+Hibernate: insert into tracker_logs (date,is_completed,points_changed,remark,user_habit_id) values (?,?,?,?,?)
+Logged 2026-03-19: false
+Hibernate: select tl1_0.id,tl1_0.date,tl1_0.is_completed,tl1_0.points_changed,tl1_0.remark,tl1_0.user_habit_id from tracker_logs tl1_0 where tl1_0.user_habit_id=? and tl1_0.date=?
+Hibernate: insert into tracker_logs (date,is_completed,points_changed,remark,user_habit_id) values (?,?,?,?,?)
+Logged 2026-03-20: true
+Hibernate: select tl1_0.id,tl1_0.date,tl1_0.is_completed,tl1_0.points_changed,tl1_0.remark,tl1_0.user_habit_id from tracker_logs tl1_0 where tl1_0.user_habit_id=? and tl1_0.date=?
+Hibernate: insert into tracker_logs (date,is_completed,points_changed,remark,user_habit_id) values (?,?,?,?,?)
+Logged 2026-03-21: true
+====== DEMO DATA LOADER FINISHED ======
+Hibernate: update app_users set date_of_birth=?,email=?,gender=?,password=?,reset_token=?,reset_token_expiry=?,total_points=?,username=? where id=?
+Hibernate: update user_habits set description=?,difficulty=?,domain=?,end_date=?,is_active=?,master_habit_id=?,name=?,plan_type=?,preferred_start_time=?,start_date=?,streak_count=?,total_completions=?,total_points_attained=?,total_points_lost=?,user_id=? where id=?
+Hibernate: select count(*) from master_habits mhc1_0
+Hibernate: select au1_0.id from app_users au1_0 where au1_0.email=? fetch first ? rows only
+Hibernate: select au1_0.id from app_users au1_0 where au1_0.email=? fetch first ? rows only
+Hibernate: select au1_0.id from app_users au1_0 where au1_0.email=? fetch first ? rows only
+Hibernate: select au1_0.id from app_users au1_0 where au1_0.email=? fetch first ? rows only
+Hibernate: select au1_0.id from app_users au1_0 where au1_0.email=? fetch first ? rows only
+Hibernate: select uh1_0.id,uh1_0.description,uh1_0.difficulty,uh1_0.domain,uh1_0.end_date,uh1_0.is_active,uh1_0.master_habit_id,uh1_0.name,uh1_0.plan_type,uh1_0.preferred_start_time,uh1_0.start_date,uh1_0.streak_count,uh1_0.total_completions,uh1_0.total_points_attained,uh1_0.total_points_lost,uh1_0.user_id,u1_0.id,u1_0.date_of_birth,u1_0.email,u1_0.gender,u1_0.password,u1_0.reset_token,u1_0.reset_token_expiry,u1_0.total_points,u1_0.username from user_habits uh1_0 join app_users u1_0 on u1_0.id=uh1_0.user_id where uh1_0.is_active=true
+Hibernate: select uh1_0.id,uh1_0.description,uh1_0.difficulty,uh1_0.domain,uh1_0.end_date,uh1_0.is_active,uh1_0.master_habit_id,uh1_0.name,uh1_0.plan_type,uh1_0.preferred_start_time,uh1_0.start_date,uh1_0.streak_count,uh1_0.total_completions,uh1_0.total_points_attained,uh1_0.total_points_lost,uh1_0.user_id,u1_0.id,u1_0.date_of_birth,u1_0.email,u1_0.gender,u1_0.password,u1_0.reset_token,u1_0.reset_token_expiry,u1_0.total_points,u1_0.username from user_habits uh1_0 join app_users u1_0 on u1_0.id=uh1_0.user_id where uh1_0.is_active=true
+Hibernate: select uh1_0.id,uh1_0.description,uh1_0.difficulty,uh1_0.domain,uh1_0.end_date,uh1_0.is_active,uh1_0.master_habit_id,uh1_0.name,uh1_0.plan_type,uh1_0.preferred_start_time,uh1_0.start_date,uh1_0.streak_count,uh1_0.total_completions,uh1_0.total_points_attained,uh1_0.total_points_lost,uh1_0.user_id,u1_0.id,u1_0.date_of_birth,u1_0.email,u1_0.gender,u1_0.password,u1_0.reset_token,u1_0.reset_token_expiry,u1_0.total_points,u1_0.username from user_habits uh1_0 join app_users u1_0 on u1_0.id=uh1_0.user_id where uh1_0.is_active=true
+Hibernate: select uh1_0.id,uh1_0.description,uh1_0.difficulty,uh1_0.domain,uh1_0.end_date,uh1_0.is_active,uh1_0.master_habit_id,uh1_0.name,uh1_0.plan_type,uh1_0.preferred_start_time,uh1_0.start_date,uh1_0.streak_count,uh1_0.total_completions,uh1_0.total_points_attained,uh1_0.total_points_lost,uh1_0.user_id,u1_0.id,u1_0.date_of_birth,u1_0.email,u1_0.gender,u1_0.password,u1_0.reset_token,u1_0.reset_token_expiry,u1_0.total_points,u1_0.username from user_habits uh1_0 join app_users u1_0 on u1_0.id=uh1_0.user_id where uh1_0.is_active=true
+Hibernate: select uh1_0.id,uh1_0.description,uh1_0.difficulty,uh1_0.domain,uh1_0.end_date,uh1_0.is_active,uh1_0.master_habit_id,uh1_0.name,uh1_0.plan_type,uh1_0.preferred_start_time,uh1_0.start_date,uh1_0.streak_count,uh1_0.total_completions,uh1_0.total_points_attained,uh1_0.total_points_lost,uh1_0.user_id,u1_0.id,u1_0.date_of_birth,u1_0.email,u1_0.gender,u1_0.password,u1_0.reset_token,u1_0.reset_token_expiry,u1_0.total_points,u1_0.username from user_habits uh1_0 join app_users u1_0 on u1_0.id=uh1_0.user_id where uh1_0.is_active=true
+Hibernate: select uh1_0.id,uh1_0.description,uh1_0.difficulty,uh1_0.domain,uh1_0.end_date,uh1_0.is_active,uh1_0.master_habit_id,uh1_0.name,uh1_0.plan_type,uh1_0.preferred_start_time,uh1_0.start_date,uh1_0.streak_count,uh1_0.total_completions,uh1_0.total_points_attained,uh1_0.total_points_lost,uh1_0.user_id,u1_0.id,u1_0.date_of_birth,u1_0.email,u1_0.gender,u1_0.password,u1_0.reset_token,u1_0.reset_token_expiry,u1_0.total_points,u1_0.username from user_habits uh1_0 join app_users u1_0 on u1_0.id=uh1_0.user_id where uh1_0.is_active=true
+Hibernate: select uh1_0.id,uh1_0.description,uh1_0.difficulty,uh1_0.domain,uh1_0.end_date,uh1_0.is_active,uh1_0.master_habit_id,uh1_0.name,uh1_0.plan_type,uh1_0.preferred_start_time,uh1_0.start_date,uh1_0.streak_count,uh1_0.total_completions,uh1_0.total_points_attained,uh1_0.total_points_lost,uh1_0.user_id,u1_0.id,u1_0.date_of_birth,u1_0.email,u1_0.gender,u1_0.password,u1_0.reset_token,u1_0.reset_token_expiry,u1_0.total_points,u1_0.username from user_habits uh1_0 join app_users u1_0 on u1_0.id=uh1_0.user_id where uh1_0.is_active=true
+Hibernate: select uh1_0.id,uh1_0.description,uh1_0.difficulty,uh1_0.domain,uh1_0.end_date,uh1_0.is_active,uh1_0.master_habit_id,uh1_0.name,uh1_0.plan_type,uh1_0.preferred_start_time,uh1_0.start_date,uh1_0.streak_count,uh1_0.total_completions,uh1_0.total_points_attained,uh1_0.total_points_lost,uh1_0.user_id,u1_0.id,u1_0.date_of_birth,u1_0.email,u1_0.gender,u1_0.password,u1_0.reset_token,u1_0.reset_token_expiry,u1_0.total_points,u1_0.username from user_habits uh1_0 join app_users u1_0 on u1_0.id=uh1_0.user_id where uh1_0.is_active=true
+Hibernate: select uh1_0.id,uh1_0.description,uh1_0.difficulty,uh1_0.domain,uh1_0.end_date,uh1_0.is_active,uh1_0.master_habit_id,uh1_0.name,uh1_0.plan_type,uh1_0.preferred_start_time,uh1_0.start_date,uh1_0.streak_count,uh1_0.total_completions,uh1_0.total_points_attained,uh1_0.total_points_lost,uh1_0.user_id,u1_0.id,u1_0.date_of_birth,u1_0.email,u1_0.gender,u1_0.password,u1_0.reset_token,u1_0.reset_token_expiry,u1_0.total_points,u1_0.username from user_habits uh1_0 join app_users u1_0 on u1_0.id=uh1_0.user_id where uh1_0.is_active=true
+Hibernate: select uh1_0.id,uh1_0.description,uh1_0.difficulty,uh1_0.domain,uh1_0.end_date,uh1_0.is_active,uh1_0.master_habit_id,uh1_0.name,uh1_0.plan_type,uh1_0.preferred_start_time,uh1_0.start_date,uh1_0.streak_count,uh1_0.total_completions,uh1_0.total_points_attained,uh1_0.total_points_lost,uh1_0.user_id,u1_0.id,u1_0.date_of_birth,u1_0.email,u1_0.gender,u1_0.password,u1_0.reset_token,u1_0.reset_token_expiry,u1_0.total_points,u1_0.username from user_habits uh1_0 join app_users u1_0 on u1_0.id=uh1_0.user_id where uh1_0.is_active=true
+Hibernate: select uh1_0.id,uh1_0.description,uh1_0.difficulty,uh1_0.domain,uh1_0.end_date,uh1_0.is_active,uh1_0.master_habit_id,uh1_0.name,uh1_0.plan_type,uh1_0.preferred_start_time,uh1_0.start_date,uh1_0.streak_count,uh1_0.total_completions,uh1_0.total_points_attained,uh1_0.total_points_lost,uh1_0.user_id,u1_0.id,u1_0.date_of_birth,u1_0.email,u1_0.gender,u1_0.password,u1_0.reset_token,u1_0.reset_token_expiry,u1_0.total_points,u1_0.username from user_habits uh1_0 join app_users u1_0 on u1_0.id=uh1_0.user_id where uh1_0.is_active=true
+Hibernate: select uh1_0.id,uh1_0.description,uh1_0.difficulty,uh1_0.domain,uh1_0.end_date,uh1_0.is_active,uh1_0.master_habit_id,uh1_0.name,uh1_0.plan_type,uh1_0.preferred_start_time,uh1_0.start_date,uh1_0.streak_count,uh1_0.total_completions,uh1_0.total_points_attained,uh1_0.total_points_lost,uh1_0.user_id,u1_0.id,u1_0.date_of_birth,u1_0.email,u1_0.gender,u1_0.password,u1_0.reset_token,u1_0.reset_token_expiry,u1_0.total_points,u1_0.username from user_habits uh1_0 join app_users u1_0 on u1_0.id=uh1_0.user_id where uh1_0.is_active=true
+Hibernate: select uh1_0.id,uh1_0.description,uh1_0.difficulty,uh1_0.domain,uh1_0.end_date,uh1_0.is_active,uh1_0.master_habit_id,uh1_0.name,uh1_0.plan_type,uh1_0.preferred_start_time,uh1_0.start_date,uh1_0.streak_count,uh1_0.total_completions,uh1_0.total_points_attained,uh1_0.total_points_lost,uh1_0.user_id,u1_0.id,u1_0.date_of_birth,u1_0.email,u1_0.gender,u1_0.password,u1_0.reset_token,u1_0.reset_token_expiry,u1_0.total_points,u1_0.username from user_habits uh1_0 join app_users u1_0 on u1_0.id=uh1_0.user_id where uh1_0.is_active=true
+Hibernate: select uh1_0.id,uh1_0.description,uh1_0.difficulty,uh1_0.domain,uh1_0.end_date,uh1_0.is_active,uh1_0.master_habit_id,uh1_0.name,uh1_0.plan_type,uh1_0.preferred_start_time,uh1_0.start_date,uh1_0.streak_count,uh1_0.total_completions,uh1_0.total_points_attained,uh1_0.total_points_lost,uh1_0.user_id,u1_0.id,u1_0.date_of_birth,u1_0.email,u1_0.gender,u1_0.password,u1_0.reset_token,u1_0.reset_token_expiry,u1_0.total_points,u1_0.username from user_habits uh1_0 join app_users u1_0 on u1_0.id=uh1_0.user_id where uh1_0.is_active=true
+Hibernate: select uh1_0.id,uh1_0.description,uh1_0.difficulty,uh1_0.domain,uh1_0.end_date,uh1_0.is_active,uh1_0.master_habit_id,uh1_0.name,uh1_0.plan_type,uh1_0.preferred_start_time,uh1_0.start_date,uh1_0.streak_count,uh1_0.total_completions,uh1_0.total_points_attained,uh1_0.total_points_lost,uh1_0.user_id,u1_0.id,u1_0.date_of_birth,u1_0.email,u1_0.gender,u1_0.password,u1_0.reset_token,u1_0.reset_token_expiry,u1_0.total_points,u1_0.username from user_habits uh1_0 join app_users u1_0 on u1_0.id=uh1_0.user_id where uh1_0.is_active=true
+Hibernate: select uh1_0.id,uh1_0.description,uh1_0.difficulty,uh1_0.domain,uh1_0.end_date,uh1_0.is_active,uh1_0.master_habit_id,uh1_0.name,uh1_0.plan_type,uh1_0.preferred_start_time,uh1_0.start_date,uh1_0.streak_count,uh1_0.total_completions,uh1_0.total_points_attained,uh1_0.total_points_lost,uh1_0.user_id,u1_0.id,u1_0.date_of_birth,u1_0.email,u1_0.gender,u1_0.password,u1_0.reset_token,u1_0.reset_token_expiry,u1_0.total_points,u1_0.username from user_habits uh1_0 join app_users u1_0 on u1_0.id=uh1_0.user_id where uh1_0.is_active=true
+Hibernate: select uh1_0.id,uh1_0.description,uh1_0.difficulty,uh1_0.domain,uh1_0.end_date,uh1_0.is_active,uh1_0.master_habit_id,uh1_0.name,uh1_0.plan_type,uh1_0.preferred_start_time,uh1_0.start_date,uh1_0.streak_count,uh1_0.total_completions,uh1_0.total_points_attained,uh1_0.total_points_lost,uh1_0.user_id,u1_0.id,u1_0.date_of_birth,u1_0.email,u1_0.gender,u1_0.password,u1_0.reset_token,u1_0.reset_token_expiry,u1_0.total_points,u1_0.username from user_habits uh1_0 join app_users u1_0 on u1_0.id=uh1_0.user_id where uh1_0.is_active=true
