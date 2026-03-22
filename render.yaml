@@ -1,29 +1,11 @@
-databases:
-  - name: rituals-db
-    plan: free
-
 services:
   - type: web
     name: rituals-backend
     env: docker
     envVars:
-      - key: DB_HOST
-        fromDatabase:
-          name: rituals-db
-          property: host
-      - key: DB_PORT
-        fromDatabase:
-          name: rituals-db
-          property: port
-      - key: DB_NAME
-        fromDatabase:
-          name: rituals-db
-          property: database
-      - key: SPRING_DATASOURCE_USERNAME
-        fromDatabase:
-          name: rituals-db
-          property: user
-      - key: SPRING_DATASOURCE_PASSWORD
-        fromDatabase:
-          name: rituals-db
-          property: password
+      - key: DATABASE_URL
+        value: postgresql://neondb_owner:npg_wBhCSRMz42sn@ep-long-feather-a1sre95p-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require
+      - key: MAIL_USERNAME
+        value: shivanimanivannan2@gmail.com
+      - key: MAIL_PASSWORD
+        value: lvvleawwmnegxrjx
