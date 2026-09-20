@@ -1,75 +1,65 @@
 package com.rituals.backend.config;
 
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.env.EnvironmentPostProcessor;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.MapPropertySource;
 
-import javax.sql.DataSource;
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
-@Configuration
-public class DatabaseConfig {
+/**
+ * Runs before any Spring beans are created.
+ * Strips embedded user:pass credentials out of the datasource URL so HikariCP
+ * receives a clean jdbc:postgresql://host:port/db?... URL plus separate
+ * username/password properties.
+ *
+ * This handles both cases:
+ *   postgresql://user:pass@host/db?sslmode=require  (Render DATABASE_URL format)
+ *   jdbc:postgresql://user:pass@host/db?sslmode=require  (with jdbc: prefix)
+ */
+public class DatabaseConfig implements EnvironmentPostProcessor {
 
-    @Value("${spring.datasource.url:}")
-    private String rawUrl;
+    @Override
+    public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
+        String url = environment.getProperty("spring.datasource.url");
+        if (url == null || url.isBlank()) return;
 
-    @Value("${spring.datasource.username:}")
-    private String rawUsername;
+        // Strip jdbc: prefix for URI parsing
+        String rawUrl = url.startsWith("jdbc:") ? url.substring(5) : url;
+        if (!rawUrl.startsWith("postgresql://")) return;
 
-    @Value("${spring.datasource.password:}")
-    private String rawPassword;
+        try {
+            URI uri = new URI(rawUrl);
+            String userInfo = uri.getUserInfo();
+            if (userInfo == null || userInfo.isBlank()) return; // No embedded credentials, nothing to do
 
-    @Bean
-    @Primary
-    public DataSource dataSource() {
-        String dbUrl = rawUrl;
-        String username = rawUsername;
-        String password = rawPassword;
+            String[] parts = userInfo.split(":", 2);
+            String username = parts[0];
+            String password = parts.length > 1 ? parts[1] : "";
 
-        if (dbUrl != null && !dbUrl.isBlank()) {
-            String cleanUrl = dbUrl.startsWith("jdbc:") ? dbUrl.substring(5) : dbUrl;
-            if (cleanUrl.startsWith("postgresql://")) {
-                try {
-                    URI uri = new URI(cleanUrl);
-                    if (uri.getUserInfo() != null) {
-                        String[] userInfo = uri.getUserInfo().split(":");
-                        username = userInfo[0];
-                        password = userInfo.length > 1 ? userInfo[1] : "";
-                        
-                        String host = uri.getHost();
-                        int port = uri.getPort() > 0 ? uri.getPort() : 5432;
-                        String path = uri.getPath();
-                        String query = uri.getQuery() != null ? "?" + uri.getQuery() : "?sslmode=require";
+            int port = uri.getPort() > 0 ? uri.getPort() : 5432;
+            String query = uri.getQuery() != null ? "?" + uri.getQuery() : "?sslmode=require";
+            String fixedUrl = "jdbc:postgresql://" + uri.getHost() + ":" + port + uri.getPath() + query;
 
-                        dbUrl = "jdbc:postgresql://" + host + ":" + port + path + query;
-                    }
-                } catch (Exception e) {
-                    // Ignore parse errors and fallback
-                }
+            // Only override if not already set separately
+            Map<String, Object> props = new HashMap<>();
+            props.put("spring.datasource.url", fixedUrl);
+            if (environment.getProperty("spring.datasource.username") == null
+                    || environment.getProperty("spring.datasource.username").isBlank()) {
+                props.put("spring.datasource.username", username);
             }
-        }
+            if (environment.getProperty("spring.datasource.password") == null
+                    || environment.getProperty("spring.datasource.password").isBlank()) {
+                props.put("spring.datasource.password", password);
+            }
 
-        if (dbUrl == null || dbUrl.isBlank()) {
-            dbUrl = "jdbc:postgresql://localhost:5432/rituals?sslmode=disable";
-            username = "postgres";
-            password = "shivudb";
-        } else if (!dbUrl.startsWith("jdbc:")) {
-            dbUrl = "jdbc:" + dbUrl;
+            // addFirst so this takes highest priority
+            environment.getPropertySources().addFirst(new MapPropertySource("fixedDatasource", props));
+            System.out.println("[DatabaseConfig] Fixed embedded-credentials datasource URL -> " + fixedUrl);
+        } catch (Exception e) {
+            System.err.println("[DatabaseConfig] Could not parse datasource URL: " + e.getMessage());
         }
-
-        HikariConfig config = new HikariConfig();
-        config.setJdbcUrl(dbUrl);
-        if (username != null && !username.isBlank()) {
-            config.setUsername(username);
-        }
-        if (password != null && !password.isBlank()) {
-            config.setPassword(password);
-        }
-        config.setDriverClassName("org.postgresql.Driver");
-
-        return new HikariDataSource(config);
     }
 }
