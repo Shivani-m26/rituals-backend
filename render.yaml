@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: rituals-backend
+    name: rituals-backend-3
     env: docker
     envVars:
       - key: SPRING_DATASOURCE_URL
