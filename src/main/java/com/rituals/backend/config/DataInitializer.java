@@ -93,6 +93,8 @@ public class DataInitializer implements CommandLineRunner {
             "Fitness & Health", "Self Care & Mindfulness", "Learning & Growth"
         };
 
+        java.util.List<MasterHabitCatalog> habitList = new java.util.ArrayList<>();
+
         for (String domain : domains) {
             String[] preferences = getPreferences(domain);
             for (String pref : preferences) {
@@ -103,7 +105,7 @@ public class DataInitializer implements CommandLineRunner {
                     int time = (i % 5 == 0) ? 15 : (i % 5 == 1) ? 30 : (i % 5 == 2) ? 45 : (i % 5 == 3) ? 60 : 120;
                     String gender = (i % 3 == 0) ? "Male" : (i % 3 == 1) ? "Female" : "both";
                     
-                    habitRepository.save(MasterHabitCatalog.builder()
+                    habitList.add(MasterHabitCatalog.builder()
                         .name(name + " (" + pref + ")")
                         .domain(domain)
                         .preference(pref)
@@ -115,6 +117,7 @@ public class DataInitializer implements CommandLineRunner {
                 }
             }
         }
+        habitRepository.saveAll(habitList);
     }
 
     private String[] getPreferences(String domain) {
