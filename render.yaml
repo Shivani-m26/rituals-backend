@@ -4,7 +4,11 @@ services:
     env: docker
     envVars:
       - key: SPRING_DATASOURCE_URL
-        value: jdbc:postgresql://neondb_owner:npg_wBhCSRMz42sn@ep-long-feather-a1sre95p-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require
+        value: jdbc:postgresql://ep-long-feather-a1sre95p-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require
+      - key: SPRING_DATASOURCE_USERNAME
+        value: neondb_owner
+      - key: SPRING_DATASOURCE_PASSWORD
+        value: npg_wBhCSRMz42sn
       - key: MAIL_USERNAME
         value: shivanimanivannan2@gmail.com
       - key: MAIL_PASSWORD
