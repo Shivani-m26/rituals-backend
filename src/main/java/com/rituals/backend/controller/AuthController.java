@@ -46,33 +46,39 @@ public class AuthController {
             final String jwt = jwtUtil.generateToken(userDetails);
             return ResponseEntity.ok(new AuthResponse(jwt, user.getId(), user.getUsername(), user.getTotalPoints()));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage() != null ? e.getMessage() : "Registration failed."));
         }
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthRequest authRequest) throws Exception {
+    public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthRequest authRequest) {
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword())
             );
-        } catch (BadCredentialsException e) {
-            return ResponseEntity.badRequest().body("Incorrect email or password");
+        } catch (org.springframework.security.core.AuthenticationException e) {
+            return ResponseEntity.status(401).body(Map.of("message", "Incorrect email or password"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Login failed. Please check your credentials."));
         }
 
-        final UserDetails userDetails = userDetailsService.loadUserByUsername(authRequest.getEmail());
-        final String jwt = jwtUtil.generateToken(userDetails);
-        
-        AppUser user = userRepository.findByEmail(authRequest.getEmail()).orElseThrow();
+        try {
+            final UserDetails userDetails = userDetailsService.loadUserByUsername(authRequest.getEmail());
+            final String jwt = jwtUtil.generateToken(userDetails);
+            
+            AppUser user = userRepository.findByEmail(authRequest.getEmail()).orElseThrow();
 
-        return ResponseEntity.ok(new AuthResponse(jwt, user.getId(), user.getUsername(), user.getTotalPoints()));
+            return ResponseEntity.ok(new AuthResponse(jwt, user.getId(), user.getUsername(), user.getTotalPoints()));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Could not complete login. Please try again."));
+        }
     }
 
     @PostMapping("/forgot-password")
     public ResponseEntity<?> forgotPassword(@RequestBody Map<String, String> request) {
         String email = request.get("email");
         if (email == null || email.isBlank()) {
-            return ResponseEntity.badRequest().body("Email is required.");
+            return ResponseEntity.badRequest().body(Map.of("message", "Email is required."));
         }
 
         return userRepository.findByEmail(email).map(user -> {
@@ -94,24 +100,24 @@ public class AuthController {
         String newPassword = request.get("newPassword");
 
         if (email == null || token == null || newPassword == null) {
-            return ResponseEntity.badRequest().body("Email, token, and new password are required.");
+            return ResponseEntity.badRequest().body(Map.of("message", "Email, token, and new password are required."));
         }
 
         if (newPassword.length() < 8 || !newPassword.matches(".*[A-Z].*") || !newPassword.matches(".*[a-z].*") || !newPassword.matches(".*\\d.*") || !newPassword.matches(".*[!@#$%^&*()-+=_].*")) {
-            return ResponseEntity.badRequest().body("Password must be at least 8 characters long and contain uppercase, lowercase, number, and special character.");
+            return ResponseEntity.badRequest().body(Map.of("message", "Password must be at least 8 characters long and contain uppercase, lowercase, number, and special character."));
         }
 
         AppUser user = userRepository.findByEmail(email).orElse(null);
         if (user == null || user.getResetToken() == null) {
-            return ResponseEntity.badRequest().body("Invalid reset request.");
+            return ResponseEntity.badRequest().body(Map.of("message", "Invalid reset request."));
         }
 
         if (!user.getResetToken().equals(token)) {
-            return ResponseEntity.badRequest().body("Invalid or expired reset token.");
+            return ResponseEntity.badRequest().body(Map.of("message", "Invalid or expired reset token."));
         }
 
         if (user.getResetTokenExpiry() != null && user.getResetTokenExpiry().isBefore(LocalDateTime.now())) {
-            return ResponseEntity.badRequest().body("Reset token has expired. Please request a new one.");
+            return ResponseEntity.badRequest().body(Map.of("message", "Reset token has expired. Please request a new one."));
         }
 
         user.setPassword(passwordEncoder.encode(newPassword));
@@ -124,8 +130,15 @@ public class AuthController {
 
     @GetMapping("/me")
     public ResponseEntity<?> getProfile() {
-        String email = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getName();
-        AppUser user = userRepository.findByEmail(email).orElseThrow();
+        org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated() || "anonymousUser".equalsIgnoreCase(auth.getName())) {
+            return ResponseEntity.status(401).body(Map.of("message", "Not authenticated"));
+        }
+        String email = auth.getName();
+        AppUser user = userRepository.findByEmail(email).orElse(null);
+        if (user == null) {
+            return ResponseEntity.status(404).body(Map.of("message", "User not found"));
+        }
         
         Integer age = null;
         if (user.getDateOfBirth() != null) {

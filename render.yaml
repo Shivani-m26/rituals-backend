@@ -3,8 +3,8 @@ services:
     name: rituals-backend
     env: docker
     envVars:
-      - key: DATABASE_URL
-        value: postgresql://neondb_owner:npg_wBhCSRMz42sn@ep-long-feather-a1sre95p-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require
+      - key: SPRING_DATASOURCE_URL
+        value: jdbc:postgresql://neondb_owner:npg_wBhCSRMz42sn@ep-long-feather-a1sre95p-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require
       - key: MAIL_USERNAME
         value: shivanimanivannan2@gmail.com
       - key: MAIL_PASSWORD
