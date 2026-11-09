@@ -46,6 +46,10 @@ public class AppUser {
     @Column(name = "reset_token_expiry")
     private LocalDateTime resetTokenExpiry;
 
+    // Login tracking
+    @Column(name = "last_login_at")
+    private LocalDateTime lastLoginAt;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<UserHabit> habits;
     
@@ -54,4 +58,7 @@ public class AppUser {
     
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Journal> journals;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Todo> todos;
 }
