@@ -1,5 +1,6 @@
 package com.rituals.backend.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,8 +10,15 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -18,6 +26,19 @@ import java.time.format.DateTimeFormatter;
 public class EmailService {
 
     private final JavaMailSender mailSender;
+    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final HttpClient httpClient = HttpClient.newBuilder()
+            .connectTimeout(Duration.ofSeconds(10))
+            .build();
+
+    @Value("${resend.api.key:}")
+    private String resendApiKey;
+
+    @Value("${resend.from:Rituals <onboarding@resend.dev>}")
+    private String resendFrom;
+
+    @Value("${brevo.api.key:}")
+    private String brevoApiKey;
 
     @Value("${spring.mail.username:}")
     private String fromEmail;
@@ -25,13 +46,93 @@ public class EmailService {
     @Value("${app.mail.sender-name:Rituals ✨}")
     private String senderName;
 
-    private boolean isMailConfigured() {
-        return fromEmail != null && !fromEmail.isBlank();
+    /**
+     * Dispatch email using HTTPS REST API (Resend / Brevo) first to bypass cloud SMTP blocks.
+     * Falls back to standard JavaMail SMTP if no API keys are provided.
+     */
+    private void dispatchEmail(String toEmail, String subject, String bodyText) {
+        // Priority 1: Resend HTTPS API (Port 443 - Never blocked)
+        if (resendApiKey != null && !resendApiKey.isBlank()) {
+            boolean success = sendViaResend(toEmail, subject, bodyText);
+            if (success) return;
+        }
+
+        // Priority 2: Brevo HTTPS API (Port 443 - Never blocked)
+        if (brevoApiKey != null && !brevoApiKey.isBlank()) {
+            boolean success = sendViaBrevo(toEmail, subject, bodyText);
+            if (success) return;
+        }
+
+        // Priority 3: Fall back to SMTP (port 587)
+        sendViaSmtp(toEmail, subject, bodyText);
     }
 
-    private void sendMimeEmail(String toEmail, String subject, String bodyText, boolean isHtml) {
-        if (!isMailConfigured()) {
-            log.warn("[EMAIL] Outgoing email skipped for {}: MAIL_USERNAME is not configured.", toEmail);
+    private boolean sendViaResend(String toEmail, String subject, String bodyText) {
+        try {
+            Map<String, Object> payload = Map.of(
+                    "from", resendFrom,
+                    "to", List.of(toEmail),
+                    "subject", subject,
+                    "text", bodyText
+            );
+            String json = objectMapper.writeValueAsString(payload);
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("https://api.resend.com/emails"))
+                    .header("Authorization", "Bearer " + resendApiKey.trim())
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(json))
+                    .build();
+
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() >= 200 && response.statusCode() < 300) {
+                log.info("[EMAIL-RESEND] Successfully dispatched '{}' to {}", subject, toEmail);
+                return true;
+            } else {
+                log.error("[EMAIL-RESEND] API error {}: {}", response.statusCode(), response.body());
+                return false;
+            }
+        } catch (Exception e) {
+            log.error("[EMAIL-RESEND] Failed: {}", e.getMessage());
+            return false;
+        }
+    }
+
+    private boolean sendViaBrevo(String toEmail, String subject, String bodyText) {
+        try {
+            String senderEmail = (fromEmail != null && !fromEmail.isBlank()) ? fromEmail : "contact@rituals.app";
+            Map<String, Object> payload = Map.of(
+                    "sender", Map.of("name", senderName, "email", senderEmail),
+                    "to", List.of(Map.of("email", toEmail)),
+                    "subject", subject,
+                    "textContent", bodyText
+            );
+            String json = objectMapper.writeValueAsString(payload);
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("https://api.brevo.com/v3/smtp/email"))
+                    .header("api-key", brevoApiKey.trim())
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(json))
+                    .build();
+
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() >= 200 && response.statusCode() < 300) {
+                log.info("[EMAIL-BREVO] Successfully dispatched '{}' to {}", subject, toEmail);
+                return true;
+            } else {
+                log.error("[EMAIL-BREVO] API error {}: {}", response.statusCode(), response.body());
+                return false;
+            }
+        } catch (Exception e) {
+            log.error("[EMAIL-BREVO] Failed: {}", e.getMessage());
+            return false;
+        }
+    }
+
+    private void sendViaSmtp(String toEmail, String subject, String bodyText) {
+        if (fromEmail == null || fromEmail.isBlank()) {
+            log.warn("[EMAIL-SMTP] Skipped: No mail configuration found.");
             return;
         }
 
@@ -41,12 +142,12 @@ public class EmailService {
             helper.setFrom(fromEmail, senderName);
             helper.setTo(toEmail);
             helper.setSubject(subject);
-            helper.setText(bodyText, isHtml);
+            helper.setText(bodyText, false);
 
             mailSender.send(mimeMessage);
-            log.info("[EMAIL] Successfully sent '{}' to {}", subject, toEmail);
+            log.info("[EMAIL-SMTP] Successfully sent '{}' to {}", subject, toEmail);
         } catch (Exception e) {
-            log.error("[EMAIL] Failed to send email to {}: {}", toEmail, e.getMessage());
+            log.error("[EMAIL-SMTP] Failed to send email to {}: {}", toEmail, e.getMessage());
         }
     }
 
@@ -64,7 +165,7 @@ public class EmailService {
                 "With warmth,\n" +
                 "— The Rituals Team ✨";
 
-        sendMimeEmail(toEmail, subject, body, false);
+        dispatchEmail(toEmail, subject, body);
     }
 
     @Async
@@ -81,7 +182,7 @@ public class EmailService {
                 "If this wasn't you, please reset your password immediately via the 'Lost Your Key?' option on the login page to keep your account safe.\n\n" +
                 "— The Rituals Team ✨";
 
-        sendMimeEmail(toEmail, subject, body, false);
+        dispatchEmail(toEmail, subject, body);
     }
 
     @Async
@@ -99,7 +200,7 @@ public class EmailService {
                 "If you did not request this reset, please ignore this email.\n\n" +
                 "— The Rituals Team ✨";
 
-        sendMimeEmail(toEmail, subject, body, false);
+        dispatchEmail(toEmail, subject, body);
     }
 
     @Async
@@ -111,16 +212,11 @@ public class EmailService {
                 "Remember, small daily improvements lead to stunning results!\n\n" +
                 "— Your Rituals Companion ✨";
 
-        sendMimeEmail(toEmail, subject, body, false);
+        dispatchEmail(toEmail, subject, body);
     }
 
     @Async
     public void sendContactFormEmail(String fromName, String senderEmail, String fromPhone, String comments) {
-        if (!isMailConfigured()) {
-            log.warn("[EMAIL] Contact form submission could not be sent: MAIL_USERNAME is not configured.");
-            return;
-        }
-
         String subject = "Rituals - New Contact from " + fromName;
         String body = "📬 New contact form submission received:\n\n" +
                 "Name: " + fromName + "\n" +
@@ -129,6 +225,7 @@ public class EmailService {
                 "Message:\n" + comments + "\n\n" +
                 "— Rituals Contact System";
 
-        sendMimeEmail(fromEmail, subject, body, false);
+        String targetAdmin = (fromEmail != null && !fromEmail.isBlank()) ? fromEmail : "contact@rituals.app";
+        dispatchEmail(targetAdmin, subject, body);
     }
 }
