@@ -1,6 +1,5 @@
 package com.rituals.backend.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,8 +16,6 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +23,6 @@ import java.util.Map;
 public class EmailService {
 
     private final JavaMailSender mailSender;
-    private final ObjectMapper objectMapper = new ObjectMapper();
     private final HttpClient httpClient = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(10))
             .build();
@@ -45,6 +41,17 @@ public class EmailService {
 
     @Value("${app.mail.sender-name:Rituals ✨}")
     private String senderName;
+
+    private static String escapeJson(String s) {
+        if (s == null) return "";
+        return s.replace("\\", "\\\\")
+                .replace("\"", "\\\"")
+                .replace("\b", "\\b")
+                .replace("\f", "\\f")
+                .replace("\n", "\\n")
+                .replace("\r", "\\r")
+                .replace("\t", "\\t");
+    }
 
     /**
      * Dispatch email using HTTPS REST API (Resend / Brevo) first to bypass cloud SMTP blocks.
@@ -69,13 +76,12 @@ public class EmailService {
 
     private boolean sendViaResend(String toEmail, String subject, String bodyText) {
         try {
-            Map<String, Object> payload = Map.of(
-                    "from", resendFrom,
-                    "to", List.of(toEmail),
-                    "subject", subject,
-                    "text", bodyText
-            );
-            String json = objectMapper.writeValueAsString(payload);
+            String json = "{"
+                    + "\"from\":\"" + escapeJson(resendFrom) + "\","
+                    + "\"to\":[\"" + escapeJson(toEmail) + "\"],"
+                    + "\"subject\":\"" + escapeJson(subject) + "\","
+                    + "\"text\":\"" + escapeJson(bodyText) + "\""
+                    + "}";
 
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create("https://api.resend.com/emails"))
@@ -101,13 +107,12 @@ public class EmailService {
     private boolean sendViaBrevo(String toEmail, String subject, String bodyText) {
         try {
             String senderEmail = (fromEmail != null && !fromEmail.isBlank()) ? fromEmail : "contact@rituals.app";
-            Map<String, Object> payload = Map.of(
-                    "sender", Map.of("name", senderName, "email", senderEmail),
-                    "to", List.of(Map.of("email", toEmail)),
-                    "subject", subject,
-                    "textContent", bodyText
-            );
-            String json = objectMapper.writeValueAsString(payload);
+            String json = "{"
+                    + "\"sender\":{\"name\":\"" + escapeJson(senderName) + "\",\"email\":\"" + escapeJson(senderEmail) + "\"},"
+                    + "\"to\":[{\"email\":\"" + escapeJson(toEmail) + "\"}],"
+                    + "\"subject\":\"" + escapeJson(subject) + "\","
+                    + "\"textContent\":\"" + escapeJson(bodyText) + "\""
+                    + "}";
 
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create("https://api.brevo.com/v3/smtp/email"))
