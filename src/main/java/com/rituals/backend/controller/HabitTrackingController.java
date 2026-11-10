@@ -24,6 +24,7 @@ public class HabitTrackingController {
     private final MasterHabitRepository masterHabitRepository;
     private final AppUserRepository userRepository;
     private final HabitTrackingService trackingService;
+    private final com.rituals.backend.scheduler.HabitReminderScheduler reminderScheduler;
 
     @GetMapping("/active")
     public ResponseEntity<List<UserHabit>> getActiveHabits(Authentication authentication) {
@@ -91,6 +92,12 @@ public class HabitTrackingController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    @PostMapping("/reminders/send-now")
+    public ResponseEntity<?> sendRemindersNow() {
+        reminderScheduler.sendDailyMorningRitualReminders();
+        return ResponseEntity.ok(Map.of("message", "Daily reminders triggered successfully"));
     }
 
     @DeleteMapping("/{id}")
