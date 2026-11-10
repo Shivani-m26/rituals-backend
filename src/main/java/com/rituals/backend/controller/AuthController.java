@@ -10,6 +10,7 @@ import com.rituals.backend.security.JwtUtil;
 import com.rituals.backend.service.AuthService;
 import com.rituals.backend.service.EmailService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -30,6 +31,7 @@ import java.util.regex.Pattern;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
+@Slf4j
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
@@ -46,8 +48,10 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody RegisterRequest request) {
+        log.info("[AUTH] Registration attempt for email: '{}'", request != null ? request.getEmail() : "null");
         try {
             AppUser user = authService.registerUser(request);
+            log.info("[AUTH] Registration successful! Created user: '{}' (id: {}). Dispatching welcome email...", user.getUsername(), user.getId());
             // Send asynchronous welcome email to the user
             emailService.sendWelcomeEmail(user.getEmail(), user.getUsername());
 
@@ -75,15 +79,20 @@ public class AuthController {
             return ResponseEntity.badRequest().body(Map.of("message", "Email and password cannot be empty."));
         }
 
+        log.info("[AUTH] Login attempt for email: '{}'", email);
+
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(email, password)
             );
         } catch (BadCredentialsException | UsernameNotFoundException e) {
+            log.warn("[AUTH] Login failed for '{}': {}", email, e.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Incorrect email or password"));
         } catch (org.springframework.security.core.AuthenticationException e) {
+            log.warn("[AUTH] Authentication exception for '{}': {}", email, e.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Incorrect email or password"));
         } catch (Exception e) {
+            log.error("[AUTH] Unexpected error during login for '{}': {}", email, e.getMessage());
             return ResponseEntity.badRequest().body(Map.of("message", "Login failed. Please check your credentials."));
         }
 
@@ -91,6 +100,7 @@ public class AuthController {
             final UserDetails userDetails = userDetailsService.loadUserByUsername(email);
             final String jwt = jwtUtil.generateToken(userDetails);
             AppUser user = userRepository.findByEmail(email).orElseThrow();
+            log.info("[AUTH] Login successful for: '{}' (id: {})", user.getEmail(), user.getId());
 
             // Check if user is returning after >= 7 days
             LocalDateTime now = LocalDateTime.now();
@@ -110,20 +120,28 @@ public class AuthController {
     public ResponseEntity<?> forgotPassword(@RequestBody Map<String, String> request) {
         String email = request.get("email");
         if (email == null || email.isBlank()) {
+            log.warn("[AUTH] /forgot-password rejected: email is blank");
             return ResponseEntity.badRequest().body(Map.of("message", "Email is required."));
         }
 
         String normalizedEmail = email.trim().toLowerCase();
-        return userRepository.findByEmail(normalizedEmail).map(user -> {
-            String token = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
-            user.setResetToken(token);
-            user.setResetTokenExpiry(LocalDateTime.now().plusHours(1));
-            userRepository.save(user);
+        log.info("[AUTH] Received forgot-password request for: '{}'", normalizedEmail);
 
-            emailService.sendPasswordResetEmail(normalizedEmail, token);
-
+        AppUser user = userRepository.findByEmail(normalizedEmail).orElse(null);
+        if (user == null) {
+            log.warn("[AUTH] No account found in database matching email: '{}'. No reset email will be sent.", normalizedEmail);
             return ResponseEntity.ok(Map.of("message", "If an account with that email exists, a reset token has been sent."));
-        }).orElse(ResponseEntity.ok(Map.of("message", "If an account with that email exists, a reset token has been sent.")));
+        }
+
+        String token = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+        user.setResetToken(token);
+        user.setResetTokenExpiry(LocalDateTime.now().plusHours(1));
+        userRepository.save(user);
+
+        log.info("[AUTH] Generated reset token for '{}'. Dispatching email now...", normalizedEmail);
+        emailService.sendPasswordResetEmail(normalizedEmail, token);
+
+        return ResponseEntity.ok(Map.of("message", "If an account with that email exists, a reset token has been sent."));
     }
 
     @PostMapping("/reset-password")
